@@ -1,24 +1,22 @@
 import { ReactNode } from "react";
-import Header from "@/components/Header";
 import { Locale } from "@/lib/translations";
+import Header from "@/components/Header";
 
 export async function generateStaticParams() {
   return [{ locale: "en" }, { locale: "de" }];
 }
 
-export default async function LocaleLayout({
+export default function LocaleLayout({
   children,
   params,
 }: {
   children: ReactNode;
-  params: Promise<{ locale: Locale }>;
+  params: { locale: Locale };
 }) {
-  const { locale } = await params;
-
   return (
     <>
-      <Header locale={locale} />
-      <main>{children}</main>
+      <Header locale={params.locale} />
+      {children}
     </>
   );
 }
