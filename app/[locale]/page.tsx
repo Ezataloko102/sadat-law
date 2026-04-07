@@ -5,14 +5,15 @@ import { Locale, translations } from "@/lib/translations";
 export default async function LocalePage({
   params,
 }: {
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = translations[locale];
+  const safeLocale: Locale = locale === "de" ? "de" : "en";
+  const t = translations[safeLocale];
 
   return (
     <>
-      <Hero locale={locale} />
+      <Hero locale={safeLocale} />
 
       <section id="services" className="section">
         <h2>{t.servicesOverview.title}</h2>
@@ -21,7 +22,7 @@ export default async function LocalePage({
           <div className="card">
             <h3>{t.servicesOverview.card1Title}</h3>
             <p>{t.servicesOverview.card1Text}</p>
-            <Link href={`/${locale}/contact`}>
+            <Link href={`/${safeLocale}/contact`}>
               {t.servicesOverview.card1Btn}
             </Link>
           </div>
@@ -29,7 +30,7 @@ export default async function LocalePage({
           <div className="card">
             <h3>{t.servicesOverview.card2Title}</h3>
             <p>{t.servicesOverview.card2Text}</p>
-            <Link href={`/${locale}/contact`}>
+            <Link href={`/${safeLocale}/contact`}>
               {t.servicesOverview.card2Btn}
             </Link>
           </div>
@@ -50,7 +51,7 @@ export default async function LocalePage({
         <h2>{t.contact.title}</h2>
         <p>{t.contact.text}</p>
 
-        <Link href={`/${locale}/contact`} className="primary-btn">
+        <Link href={`/${safeLocale}/contact`} className="primary-btn">
           {t.nav.requestConsult}
         </Link>
       </section>
