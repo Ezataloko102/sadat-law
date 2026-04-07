@@ -22,8 +22,11 @@ const languageOptions = {
 };
 
 export default function Header({ locale }: Props) {
-  const t = translations[locale];
   const pathname = usePathname();
+
+  const safeLocale: Locale = locale === "de" ? "de" : "en";
+  const t = translations[safeLocale];
+  const currentLang = languageOptions[safeLocale];
 
   const [scrolled, setScrolled] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -58,8 +61,6 @@ export default function Header({ locale }: Props) {
     setLangOpen(false);
   }, [pathname]);
 
-  const currentLang = languageOptions[locale];
-
   const getLocalizedPath = (targetLocale: Locale) => {
     if (!pathname) return `/${targetLocale}`;
 
@@ -80,7 +81,7 @@ export default function Header({ locale }: Props) {
   return (
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
       <div className="header-inner">
-        <Link href={`/${locale}`} className="logo">
+        <Link href={`/${safeLocale}`} className="logo">
           <Image
             src="/images/logo.png"
             alt="Sadat Legal Logo"
@@ -100,9 +101,9 @@ export default function Header({ locale }: Props) {
         </button>
 
         <nav className={`nav ${mobileMenuOpen ? "nav-open" : ""}`}>
-          <Link href={`/${locale}`}>{t.nav.home}</Link>
-          <Link href={`/${locale}#services`}>{t.nav.services}</Link>
-          <Link href={`/${locale}#about`}>{t.nav.aboutUs}</Link>
+          <Link href={`/${safeLocale}`}>{t.nav.home}</Link>
+          <Link href={`/${safeLocale}#services`}>{t.nav.services}</Link>
+          <Link href={`/${safeLocale}#about`}>{t.nav.aboutUs}</Link>
 
           <div className="lang-dropdown" ref={langRef}>
             <button
@@ -125,7 +126,7 @@ export default function Header({ locale }: Props) {
               <div className="lang-menu">
                 <Link
                   href={getLocalizedPath("en")}
-                  className={`lang-item ${locale === "en" ? "active" : ""}`}
+                  className={`lang-item ${safeLocale === "en" ? "active" : ""}`}
                   onClick={() => setLangOpen(false)}
                 >
                   <Image
@@ -139,7 +140,7 @@ export default function Header({ locale }: Props) {
 
                 <Link
                   href={getLocalizedPath("de")}
-                  className={`lang-item ${locale === "de" ? "active" : ""}`}
+                  className={`lang-item ${safeLocale === "de" ? "active" : ""}`}
                   onClick={() => setLangOpen(false)}
                 >
                   <Image
@@ -154,7 +155,7 @@ export default function Header({ locale }: Props) {
             )}
           </div>
 
-          <Link href={`/${locale}/contact`} className="consult-btn">
+          <Link href={`/${safeLocale}/contact`} className="consult-btn">
             {t.nav.requestConsult}
           </Link>
         </nav>

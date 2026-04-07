@@ -51,7 +51,7 @@ export default async function LocalePage({
         <p>{t.contact.text}</p>
 
         <Link href={`/${locale}/contact`} className="primary-btn">
-          {t.nav.contact}
+          {t.nav.requestConsult}
         </Link>
       </section>
     </>
