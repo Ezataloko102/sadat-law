@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.re_HWLqdPcj_HGfCXCjoFw1mAK7sv9V5YCdb);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 🔒 جلوگیری از XSS
 function escapeHtml(value: string) {
