@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       from: "Sadat Legal <onboarding@resend.dev>", // موقت
       to: "info@sadatlaw.de",
       subject: `New Appointment Request - ${safeName}`,
-      reply_to: safeEmail,
+      replyTo: safeEmail,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111;">
           <h2 style="margin-bottom: 16px;">New Appointment Request</h2>
