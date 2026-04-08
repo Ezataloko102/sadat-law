@@ -1,25 +1,9 @@
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const host = process.env.CONTACT_EMAIL_HOST || "mail.sadatlaw.de";
-const port = Number(process.env.CONTACT_EMAIL_PORT || 465);
-const user = process.env.CONTACT_EMAIL_USER;
-const pass = process.env.CONTACT_EMAIL_PASS;
-const receiver = process.env.CONTACT_RECEIVER_EMAIL;
+const resend = new Resend(process.env.re_HWLqdPcj_HGfCXCjoFw1mAK7sv9V5YCdb);
 
-const transporter = nodemailer.createTransport({
-  host,
-  port,
-  secure: port === 465,
-  auth: {
-    user,
-    pass,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
-});
-
+// 🔒 جلوگیری از XSS
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -31,10 +15,10 @@ function escapeHtml(value: string) {
 
 export async function POST(req: Request) {
   try {
-    if (!user || !pass || !receiver) {
-      console.error("Missing email environment variables");
+    // 🔑 چک API key
+    if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
-        { message: "Email configuration is incomplete." },
+        { message: "Email service not configured." },
         { status: 500 }
       );
     }
@@ -47,6 +31,7 @@ export async function POST(req: Request) {
     const service = String(body.service || "").trim();
     const message = String(body.message || "").trim();
 
+    // ❌ validation
     if (!name || !email || !service || !message) {
       return NextResponse.json(
         { message: "Please fill all required fields." },
@@ -63,33 +48,28 @@ export async function POST(req: Request) {
       );
     }
 
+    // 🔒 sanitize
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
     const safePhone = escapeHtml(phone || "-");
     const safeService = escapeHtml(service);
     const safeMessage = escapeHtml(message).replace(/\n/g, "<br />");
 
-    await transporter.sendMail({
-      from: `"Sadat Legal Website" <${user}>`,
-      to: receiver,
-      replyTo: email,
-      subject: `Appointment Request - ${name} (${service})`,
-      text: `New Appointment Request
-
-Name: ${name}
-Email: ${email}
-Phone: ${phone || "-"}
-Service: ${service}
-
-Message:
-${message}`,
+    // 📧 ارسال ایمیل
+    await resend.emails.send({
+      from: "Sadat Legal <onboarding@resend.dev>", // موقت
+      to: "info@sadatlaw.de",
+      subject: `New Appointment Request - ${safeName}`,
+      reply_to: safeEmail,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6; color: #111;">
           <h2 style="margin-bottom: 16px;">New Appointment Request</h2>
+
           <p><strong>Name:</strong> ${safeName}</p>
           <p><strong>Email:</strong> ${safeEmail}</p>
           <p><strong>Phone:</strong> ${safePhone}</p>
           <p><strong>Service:</strong> ${safeService}</p>
+
           <p><strong>Message:</strong></p>
           <p>${safeMessage}</p>
         </div>
@@ -98,15 +78,15 @@ ${message}`,
 
     return NextResponse.json({
       success: true,
-      message: "Email sent successfully.",
+      message: "Email sent successfully ✅",
     });
-  } catch (error) {
-    console.error("EMAIL ERROR:", error);
+  } catch (error: any) {
+    console.error("RESEND ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to send email. Please try again.",
+        message: error?.message || "Failed to send email.",
       },
       { status: 500 }
     );
