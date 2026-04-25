@@ -1,60 +1,48 @@
+import About from "@/components/About";
+import Services from "@/components/Services";
 import Hero from "@/components/Hero";
 import Link from "next/link";
 import { Locale, translations } from "@/lib/translations";
 
-export default async function LocalePage({
-  params,
-}: {
+type LocalePageProps = {
   params: Promise<{ locale: string }>;
-}) {
+};
+
+export default async function LocalePage({ params }: LocalePageProps) {
   const { locale } = await params;
   const safeLocale: Locale = locale === "de" ? "de" : "en";
   const t = translations[safeLocale];
 
   return (
-    <>
+    <main>
+      {/* Hero */}
       <Hero locale={safeLocale} />
 
-      <section id="services" className="section">
-        <h2>{t.servicesOverview.title}</h2>
+      {/* Services */}
+      <Services locale={safeLocale} />
 
-        <div className="cards">
-          <div className="card">
-            <h3>{t.servicesOverview.card1Title}</h3>
-            <p>{t.servicesOverview.card1Text}</p>
-            <Link href={`/${safeLocale}/contact`}>
-              {t.servicesOverview.card1Btn}
-            </Link>
-          </div>
+      {/* About (Preview Version) */}
+      <About locale={safeLocale} />
 
-          <div className="card">
-            <h3>{t.servicesOverview.card2Title}</h3>
-            <p>{t.servicesOverview.card2Text}</p>
-            <Link href={`/${safeLocale}/contact`}>
-              {t.servicesOverview.card2Btn}
-            </Link>
-          </div>
+      {/* Legal Status */}
+      <section id="legal-status" className="section">
+        <div className="container-custom">
+          <h2 className="section-title">{t.legalStatus.title}</h2>
+          <p className="section-text">{t.legalStatus.text}</p>
         </div>
       </section>
 
-      <section id="about" className="section alt">
-        <h2>{t.about.title}</h2>
-        <p>{t.about.text}</p>
-      </section>
-
-      <section id="legal-status" className="section">
-        <h2>{t.legalStatus.title}</h2>
-        <p>{t.legalStatus.text}</p>
-      </section>
-
+      {/* Contact */}
       <section id="contact" className="section alt">
-        <h2>{t.contact.title}</h2>
-        <p>{t.contact.text}</p>
+        <div className="container-custom text-center">
+          <h2 className="section-title">{t.contact.title}</h2>
+          <p className="section-text mb-6">{t.contact.text}</p>
 
-        <Link href={`/${safeLocale}/contact`} className="primary-btn">
-          {t.nav.requestConsult}
-        </Link>
+          <Link href={`/${safeLocale}/contact`} className="btn-primary">
+            {t.nav.requestConsult}
+          </Link>
+        </div>
       </section>
-    </>
+    </main>
   );
 }
